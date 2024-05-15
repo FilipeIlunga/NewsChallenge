@@ -9,10 +9,10 @@ import UIKit
 
 class NewsHomeViewController: UIViewController {
 
-    let newsService: NewsServiceProtocol
+    let viewModel: NewsHomeViewModel
 
-    init(newsService: NewsServiceProtocol) {
-        self.newsService = newsService
+    init(viewModel: NewsHomeViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -23,6 +23,7 @@ class NewsHomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .red
+        
     }
 
 }
