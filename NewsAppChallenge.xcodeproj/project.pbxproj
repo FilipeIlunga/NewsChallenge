@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		23D41F9B2BF45AF300E12BAF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41F9A2BF45AF300E12BAF /* AppDelegate.swift */; };
 		23D41F9D2BF45AF300E12BAF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41F9C2BF45AF300E12BAF /* SceneDelegate.swift */; };
-		23D41F9F2BF45AF300E12BAF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41F9E2BF45AF300E12BAF /* ViewController.swift */; };
+		23D41F9F2BF45AF300E12BAF /* NewsHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41F9E2BF45AF300E12BAF /* NewsHomeViewController.swift */; };
 		23D41FA42BF45AF400E12BAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 23D41FA32BF45AF400E12BAF /* Assets.xcassets */; };
 		23D41FA72BF45AF400E12BAF /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 23D41FA62BF45AF400E12BAF /* Base */; };
 /* End PBXBuildFile section */
@@ -18,7 +18,7 @@
 		23D41F972BF45AF300E12BAF /* NewsAppChallenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewsAppChallenge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		23D41F9A2BF45AF300E12BAF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		23D41F9C2BF45AF300E12BAF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		23D41F9E2BF45AF300E12BAF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		23D41F9E2BF45AF300E12BAF /* NewsHomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsHomeViewController.swift; sourceTree = "<group>"; };
 		23D41FA32BF45AF400E12BAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		23D41FA62BF45AF400E12BAF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		23D41FA82BF45AF400E12BAF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,14 +54,54 @@
 		23D41F992BF45AF300E12BAF /* NewsAppChallenge */ = {
 			isa = PBXGroup;
 			children = (
+				23D41FB02BF45CE100E12BAF /* NetworkService */,
+				23D41FAE2BF45CCE00E12BAF /* Views */,
 				23D41F9A2BF45AF300E12BAF /* AppDelegate.swift */,
 				23D41F9C2BF45AF300E12BAF /* SceneDelegate.swift */,
-				23D41F9E2BF45AF300E12BAF /* ViewController.swift */,
 				23D41FA32BF45AF400E12BAF /* Assets.xcassets */,
 				23D41FA52BF45AF400E12BAF /* LaunchScreen.storyboard */,
 				23D41FA82BF45AF400E12BAF /* Info.plist */,
 			);
 			path = NewsAppChallenge;
+			sourceTree = "<group>";
+		};
+		23D41FAE2BF45CCE00E12BAF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				23D41FB22BF45CFE00E12BAF /* DetailsScreen */,
+				23D41FB12BF45CF100E12BAF /* HomeScreen */,
+				23D41FAF2BF45CD900E12BAF /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		23D41FAF2BF45CD900E12BAF /* Components */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		23D41FB02BF45CE100E12BAF /* NetworkService */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = NetworkService;
+			sourceTree = "<group>";
+		};
+		23D41FB12BF45CF100E12BAF /* HomeScreen */ = {
+			isa = PBXGroup;
+			children = (
+				23D41F9E2BF45AF300E12BAF /* NewsHomeViewController.swift */,
+			);
+			path = HomeScreen;
+			sourceTree = "<group>";
+		};
+		23D41FB22BF45CFE00E12BAF /* DetailsScreen */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DetailsScreen;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -134,7 +174,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				23D41F9F2BF45AF300E12BAF /* ViewController.swift in Sources */,
+				23D41F9F2BF45AF300E12BAF /* NewsHomeViewController.swift in Sources */,
 				23D41F9B2BF45AF300E12BAF /* AppDelegate.swift in Sources */,
 				23D41F9D2BF45AF300E12BAF /* SceneDelegate.swift in Sources */,
 			);
