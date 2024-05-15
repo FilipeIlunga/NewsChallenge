@@ -12,6 +12,11 @@
 		23D41F9F2BF45AF300E12BAF /* NewsHomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41F9E2BF45AF300E12BAF /* NewsHomeViewController.swift */; };
 		23D41FA42BF45AF400E12BAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 23D41FA32BF45AF400E12BAF /* Assets.xcassets */; };
 		23D41FA72BF45AF400E12BAF /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 23D41FA62BF45AF400E12BAF /* Base */; };
+		23D41FB42BF4615900E12BAF /* APIKEY.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41FB32BF4615900E12BAF /* APIKEY.swift */; };
+		23D41FB62BF46F9600E12BAF /* NewsType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41FB52BF46F9600E12BAF /* NewsType.swift */; };
+		23D41FB82BF46FD600E12BAF /* NewsServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41FB72BF46FD600E12BAF /* NewsServiceProtocol.swift */; };
+		23D41FBA2BF4702D00E12BAF /* NewsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41FB92BF4702D00E12BAF /* NewsService.swift */; };
+		23D41FBC2BF4706F00E12BAF /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D41FBB2BF4706E00E12BAF /* NetworkError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +27,11 @@
 		23D41FA32BF45AF400E12BAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		23D41FA62BF45AF400E12BAF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		23D41FA82BF45AF400E12BAF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		23D41FB32BF4615900E12BAF /* APIKEY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKEY.swift; sourceTree = "<group>"; };
+		23D41FB52BF46F9600E12BAF /* NewsType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsType.swift; sourceTree = "<group>"; };
+		23D41FB72BF46FD600E12BAF /* NewsServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsServiceProtocol.swift; sourceTree = "<group>"; };
+		23D41FB92BF4702D00E12BAF /* NewsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsService.swift; sourceTree = "<group>"; };
+		23D41FBB2BF4706E00E12BAF /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +95,11 @@
 		23D41FB02BF45CE100E12BAF /* NetworkService */ = {
 			isa = PBXGroup;
 			children = (
+				23D41FB32BF4615900E12BAF /* APIKEY.swift */,
+				23D41FB52BF46F9600E12BAF /* NewsType.swift */,
+				23D41FB72BF46FD600E12BAF /* NewsServiceProtocol.swift */,
+				23D41FB92BF4702D00E12BAF /* NewsService.swift */,
+				23D41FBB2BF4706E00E12BAF /* NetworkError.swift */,
 			);
 			path = NetworkService;
 			sourceTree = "<group>";
@@ -175,7 +190,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				23D41F9F2BF45AF300E12BAF /* NewsHomeViewController.swift in Sources */,
+				23D41FBC2BF4706F00E12BAF /* NetworkError.swift in Sources */,
 				23D41F9B2BF45AF300E12BAF /* AppDelegate.swift in Sources */,
+				23D41FB82BF46FD600E12BAF /* NewsServiceProtocol.swift in Sources */,
+				23D41FBA2BF4702D00E12BAF /* NewsService.swift in Sources */,
+				23D41FB62BF46F9600E12BAF /* NewsType.swift in Sources */,
+				23D41FB42BF4615900E12BAF /* APIKEY.swift in Sources */,
 				23D41F9D2BF45AF300E12BAF /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
