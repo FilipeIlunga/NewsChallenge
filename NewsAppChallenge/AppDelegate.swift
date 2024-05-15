@@ -16,7 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let window = UIWindow(frame: UIScreen.main.bounds)
         
         let newsService = NewsService()
-        window.rootViewController = UINavigationController(rootViewController: NewsHomeViewController(newsService: newsService))
+        let homeViewModel = NewsHomeViewModel(newsService: newsService)
+        window.rootViewController = UINavigationController(rootViewController: NewsHomeViewController(viewModel: homeViewModel))
         window.makeKeyAndVisible()
         self.window = window
         return true
