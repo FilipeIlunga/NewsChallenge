@@ -18,7 +18,7 @@ final class NewsHomeViewModel {
 
     init(newsService: NewsServiceProtocol) {
         self.newsService = newsService
-        NewsType.allCases.forEach { currentPage[$0] = 1 }
+        NewsType.allCases.forEach { currentPage[$0] = 10 }
     }
     
     func fetchNews(type: NewsType) async {
@@ -34,6 +34,17 @@ final class NewsHomeViewModel {
             currentPage[type] = page + 1
         } catch {
             print("Error on \(#function) for \(type): \(error.localizedDescription)")
+        }
+    }
+    
+    func fetchImage(url: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        newsService.fecthImage(url: url) { result in
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
     }
     
