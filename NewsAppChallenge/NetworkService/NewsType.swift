@@ -27,6 +27,21 @@ enum NewsType: String, CaseIterable {
         }
     }
     
+    var name: String {
+        switch self {
+        case .apple:
+            return "Apple"
+        case .tesla:
+            return "Tesla"
+        case .business:
+            return "Business"
+        case .techCrunch:
+            return "TechCrunch"
+        case .wallStreetJournal:
+            return "WTJ"
+        }
+    }
+    
     private func queryItems(page: Int) -> [URLQueryItem] {
         var items = [URLQueryItem]()
         
