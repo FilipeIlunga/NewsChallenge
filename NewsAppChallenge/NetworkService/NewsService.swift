@@ -34,6 +34,17 @@ class NewsService: NewsServiceProtocol {
         dataTask.resume()
     }
     
+    func fetchNews<T: Decodable>(type: NewsType, page: Int) async throws -> T {
+        guard let url = type.url(page: page) else {
+            throw NetworkError.badURL
+        }
+        
+        let (data, _) = try await defaultSession.data(from: url)
+        let result: T = try decode(data: data)
+        return result
+        
+    }
+    
     func fecthImage(url: String, completionBlock: @escaping (Result<Data, any Error>) -> ()) {
         guard let url = URL(string: url) else {
             return
@@ -50,5 +61,16 @@ class NewsService: NewsServiceProtocol {
                 completionBlock(.failure(NetworkError.badData))
             }
         }.resume()
+    }
+    
+    private func decode<T: Decodable>(data: Data) throws -> T {
+        let decoder: JSONDecoder = JSONDecoder()
+        
+        do {
+            let resultData: T = try decoder.decode(T.self, from: data)
+            return resultData
+        } catch {
+            throw error
+        }
     }
 }

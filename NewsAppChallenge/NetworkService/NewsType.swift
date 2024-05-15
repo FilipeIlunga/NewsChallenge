@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NewsType: String {
+enum NewsType: String, CaseIterable {
     case apple = "apple"
     case tesla = "tesla"
     case business = "business"
