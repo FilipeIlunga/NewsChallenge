@@ -23,8 +23,8 @@ class NewsFilterCells: UICollectionViewCell {
         
         contentView.addSubview(label)
         
-        contentView.layer.borderWidth = 0.5
-        contentView.layer.borderColor = UIColor.black.cgColor
+       // contentView.layer.borderWidth = 0.1
+        //contentView.layer.borderColor = UIColor.label.cgColor
         contentView.layer.cornerRadius = 16
         setConstraints()
     }
@@ -42,7 +42,7 @@ class NewsFilterCells: UICollectionViewCell {
     
     func configureCell(with newsType: NewsType, isSelected: Bool) {
         label.text = newsType.name
-        contentView.backgroundColor = isSelected ? .black : .white
-        label.textColor = isSelected ? .white : .black
+        contentView.backgroundColor = isSelected ? .label : .systemBackground
+        label.textColor = isSelected ? .systemBackground : .label
     }
 }
