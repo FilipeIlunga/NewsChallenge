@@ -17,26 +17,6 @@ class NewsTableViewCell: UITableViewCell {
     private let sourceLabel = UILabel()
     static let identifier = "NewsTableViewCell"
     
-    private var infoStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.spacing = 4
-        stack.axis = .vertical
-        stack.distribution = .fill
-        stack.alignment = .leading
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-    
-    private var mainStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.spacing = 18
-        stack.axis = .horizontal
-        stack.distribution = .fill
-        stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-    
     // MARK: - Initialization
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -53,26 +33,47 @@ class NewsTableViewCell: UITableViewCell {
     // MARK: - Setup
     
     private func setupView() {
-        infoStackView.addArrangedSubview(titleLabel)
-        infoStackView.addArrangedSubview(descriptionLabel)
-        infoStackView.addArrangedSubview(sourceLabel)
+        newsImageView.contentMode = .scaleAspectFill
+        newsImageView.clipsToBounds = true
+        newsImageView.layer.cornerRadius = 8
+        newsImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        mainStackView.addArrangedSubview(newsImageView)
-        mainStackView.addArrangedSubview(infoStackView)
+        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        titleLabel.numberOfLines = 2
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        contentView.addSubview(mainStackView)
+        descriptionLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        descriptionLabel.numberOfLines = 2
+        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        sourceLabel.font = UIFont.systemFont(ofSize: 12, weight: .light)
+        sourceLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(newsImageView)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(descriptionLabel)
+        contentView.addSubview(sourceLabel)
     }
     
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            mainStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            mainStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            mainStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            mainStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            
+            newsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            newsImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             newsImageView.widthAnchor.constraint(equalToConstant: 100),
-            newsImageView.heightAnchor.constraint(equalToConstant: 100),
-
+            newsImageView.heightAnchor.constraint(equalToConstant: 90),
+            
+            titleLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: 18),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            
+            descriptionLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: 18),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            
+            sourceLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: 18),
+            sourceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            sourceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4),
+            sourceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
         ])
     }
     
@@ -80,5 +81,9 @@ class NewsTableViewCell: UITableViewCell {
         titleLabel.text = news.title
         descriptionLabel.text = news.description
         sourceLabel.text = news.source.name
+    }
+    
+    func updateImage(_ data: Data) {
+        newsImageView.image = UIImage(data: data)
     }
 }

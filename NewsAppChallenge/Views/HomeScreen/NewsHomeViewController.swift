@@ -5,6 +5,13 @@
 //  Created by Filipe Ilunga on 14/05/24.
 //
 
+//
+//  NewsHomeViewController.swift
+//  NewsAppChallenge
+//
+//  Created by Filipe Ilunga on 14/05/24.
+//
+
 import UIKit
 
 class NewsHomeViewController: UIViewController {
@@ -14,7 +21,6 @@ class NewsHomeViewController: UIViewController {
     private let viewModel: NewsHomeViewModel
     private let tableView = UITableView()
     private lazy var newsFilterCollectionView = createNewsFilterCollectionView()
-    private lazy var newsCardCollectionView = createNewsCardCollectionView()
     
     // MARK: - Initialization
     
@@ -42,13 +48,14 @@ class NewsHomeViewController: UIViewController {
     private func setupView() {
         view.backgroundColor = .systemBackground
         
-        [newsFilterCollectionView, newsCardCollectionView, tableView].forEach {
+        [newsFilterCollectionView, tableView].forEach {
             view.addSubview($0)
         }
         
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(NewsTableViewCell.self, forCellReuseIdentifier: NewsTableViewCell.identifier)
+        tableView.register(HorizontalTableViewCell.self, forCellReuseIdentifier: HorizontalTableViewCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -58,12 +65,6 @@ class NewsHomeViewController: UIViewController {
             newsFilterCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             newsFilterCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             newsFilterCollectionView.heightAnchor.constraint(equalToConstant: 50),
-//            
-//            newsCardCollectionView.topAnchor.constraint(equalTo: newsFilterCollectionView.bottomAnchor, constant: 10),
-//            newsCardCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            newsCardCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            newsCardCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3),
-            
             tableView.topAnchor.constraint(equalTo: newsFilterCollectionView.bottomAnchor, constant: 10),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -83,18 +84,6 @@ class NewsHomeViewController: UIViewController {
         return collectionView
     }
     
-    private func createNewsCardCollectionView() -> NewsCardUICollectionView {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: view.frame.width * 0.85, height: 300)
-        let collectionView = NewsCardUICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        return collectionView
-    }
-    
     private func selectInitialFilter() {
         let firstIndexPath = IndexPath(item: 0, section: 0)
         newsFilterCollectionView.selectItem(at: firstIndexPath, animated: false, scrollPosition: .left)
@@ -105,7 +94,6 @@ class NewsHomeViewController: UIViewController {
         Task {
             await viewModel.fetchNews(type: .apple)
             DispatchQueue.main.async {
-                self.newsCardCollectionView.reloadData()
                 self.tableView.reloadData()
             }
         }
@@ -152,17 +140,57 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
 extension NewsHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        }
         return viewModel.getNews(for: .apple).count
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let section = indexPath.section
+
+        if section == 0 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HorizontalTableViewCell.identifier, for: indexPath) as? HorizontalTableViewCell else {
+                return UITableViewCell()
+            }
+            
+            cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: indexPath.row)
+            return cell
+        }
+        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: NewsTableViewCell.identifier, for: indexPath) as? NewsTableViewCell else {
             return UITableViewCell()
         }
         
         let newsItem = viewModel.getNews(for: .apple)[indexPath.row]
+
+        if let urlImage = newsItem.urlToImage {
+            viewModel.fetchImage(url: urlImage) { result in
+                switch result {
+                case .success(let data):
+                    DispatchQueue.main.async {
+                        cell.updateImage(data)
+                    }
+                case .failure(let error):
+                    print("Error fetching image: \(error)")
+                }
+            }
+        }
+        
         cell.configure(news: newsItem)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        switch indexPath.section {
+        case 0: return 300
+        default:
+            return 100
+        }
     }
 }
 
