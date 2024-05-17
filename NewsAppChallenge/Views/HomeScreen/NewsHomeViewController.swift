@@ -13,8 +13,10 @@
 //
 
 import UIKit
-
+ 
 class NewsHomeViewController: UIViewController {
+
+    
     
     // MARK: - Properties
     
@@ -40,7 +42,8 @@ class NewsHomeViewController: UIViewController {
         setupView()
         setupConstraints()
         selectInitialFilter()
-        loadNews()
+        viewModel.fetchAllNews()
+        tableView.reloadData()
     }
     
     // MARK: - Setup
@@ -80,6 +83,7 @@ class NewsHomeViewController: UIViewController {
         let collectionView = NewsFilterUICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         collectionView.contentInsetAdjustmentBehavior = .never
+        collectionView.filterDelegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }
@@ -90,28 +94,27 @@ class NewsHomeViewController: UIViewController {
         newsFilterCollectionView.delegate?.collectionView?(newsFilterCollectionView, didSelectItemAt: firstIndexPath)
     }
     
-    private func loadNews() {
-        Task {
-            await viewModel.fetchNews(type: .apple)
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
+//    private func loadNews() {
+//        Task {
+//            await viewModel.fetchNews(type: viewModel.selectedNewsType)
+//            DispatchQueue.main.async {
+//                self.tableView.reloadData()
+//            }
+//        }
+//    }
 }
 
 extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.getNews(for: .apple).count
+        return viewModel.numberOfItems(inSection: section)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsCardUICollectionViewCell.identifier, for: indexPath) as? NewsCardUICollectionViewCell else {
             return UICollectionViewCell()
         }
-        
-        let newsItem = viewModel.getNews(for: .apple)[indexPath.item]
+        let newsItem = viewModel.getNews(for: viewModel.selectedNewsType)[indexPath.item]
         
         if let urlImage = newsItem.urlToImage {
             viewModel.fetchImage(url: urlImage) { result in
@@ -140,14 +143,11 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
 extension NewsHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-        }
-        return viewModel.getNews(for: .apple).count
+        return viewModel.numberOfRows(inSection: section)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return SectionType.allCases.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -166,17 +166,21 @@ extension NewsHomeViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let newsItem = viewModel.getNews(for: .apple)[indexPath.row]
-
-        if let urlImage = newsItem.urlToImage {
-            viewModel.fetchImage(url: urlImage) { result in
-                switch result {
-                case .success(let data):
-                    DispatchQueue.main.async {
-                        cell.updateImage(data)
+        let newsItem = viewModel.getNews(for: viewModel.selectedNewsType)[indexPath.row]
+        if let imageData = newsItem.imageCoverData {
+            cell.updateImage(imageData)
+        } else {
+            if let urlImage = newsItem.urlToImage {
+                viewModel.fetchImage(url: urlImage) { result in
+                    switch result {
+                    case .success(let data):
+                        DispatchQueue.main.async {
+                            self.viewModel.setNewsImage(type: self.viewModel.selectedNewsType, index: indexPath.row, imageData: data)
+                            cell.updateImage(data)
+                        }
+                    case .failure(let error):
+                        print("Error fetching image: \(error)")
                     }
-                case .failure(let error):
-                    print("Error fetching image: \(error)")
                 }
             }
         }
@@ -192,6 +196,10 @@ extension NewsHomeViewController: UITableViewDataSource {
             return 100
         }
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -200,5 +208,12 @@ extension NewsHomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Implement selection logic if needed
+    }
+}
+
+extension NewsHomeViewController: NewsFilterUICollectionViewProtocol {
+    func didSelectedFilter(newsType: NewsType) {
+        viewModel.selectedNewsType = newsType
+        tableView.reloadData()
     }
 }

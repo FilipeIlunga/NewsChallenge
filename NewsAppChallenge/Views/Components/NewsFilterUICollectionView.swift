@@ -7,9 +7,14 @@
 
 import UIKit
 
+protocol NewsFilterUICollectionViewProtocol: AnyObject {
+    func didSelectedFilter(newsType: NewsType)
+}
+
 class NewsFilterUICollectionView: UICollectionView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     var newsTypes: [NewsType] = NewsType.allCases
+    weak var filterDelegate: NewsFilterUICollectionViewProtocol?
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
@@ -43,6 +48,8 @@ class NewsFilterUICollectionView: UICollectionView, UICollectionViewDataSource, 
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let newsType = newsTypes[indexPath.item]
+        filterDelegate?.didSelectedFilter(newsType: newsType)
         if let cell = collectionView.cellForItem(at: indexPath) as? NewsFilterCells {
             cell.configureCell(with: newsTypes[indexPath.item], isSelected: true)
         }

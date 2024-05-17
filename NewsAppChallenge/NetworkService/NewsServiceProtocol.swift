@@ -9,6 +9,6 @@ import Foundation
 
 protocol NewsServiceProtocol {
     func fetchNews<T: Decodable>(type: NewsType, page: Int) async throws -> T
-    func fecthImage(url: String, completionBlock: @escaping (Result<Data,Error>) -> ())
+    func fetchImage(url: String, completionBlock: @escaping (Result<Data,Error>) -> ())
 
 }

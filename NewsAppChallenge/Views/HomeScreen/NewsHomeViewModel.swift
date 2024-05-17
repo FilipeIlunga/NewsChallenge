@@ -5,14 +5,20 @@
 //  Created by Filipe Ilunga on 15/05/24.
 //
 
-import Foundation
+enum SectionType: Int, CaseIterable {
+    case horizontal = 0
+    case vertical = 1
+}
+
 
 import Foundation
+import UIKit
 
 final class NewsHomeViewModel {
-        
-    private var news: [NewsType: [News]] = [:]
+    
+    @Atomic private var news: [NewsType: [News]] = [:]
     private var currentPage: [NewsType: Int] = [:]
+    var selectedNewsType: NewsType = .apple
     
     let newsService: NewsServiceProtocol
 
@@ -21,8 +27,16 @@ final class NewsHomeViewModel {
         NewsType.allCases.forEach { currentPage[$0] = 10 }
     }
     
+    func fetchAllNews() {
+        Task {
+            for type in NewsType.allCases {
+                await fetchNews(type: type)
+            }
+        }
+    }
+    
     func fetchNews(type: NewsType) async {
-        guard let page = currentPage[type] else { return }
+        guard let page = currentPage[type], type != .tesla else { return }
         
         do {
             let result: NewsDataResponse = try await newsService.fetchNews(type: type, page: page)
@@ -38,7 +52,7 @@ final class NewsHomeViewModel {
     }
     
     func fetchImage(url: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        newsService.fecthImage(url: url) { result in
+        newsService.fetchImage(url: url) { result in
             switch result {
             case .success(let data):
                 completion(.success(data))
@@ -48,17 +62,29 @@ final class NewsHomeViewModel {
         }
     }
     
-    func fetchAllNews() async {
-        for type in NewsType.allCases {
-            await fetchNews(type: type)
-        }
-    }
-    
     func getNews(for type: NewsType) -> [News] {
         return news[type] ?? []
     }
     
+    func setNewsImage(type: NewsType, index: Int ,imageData: Data) {
+        news[type]?[index].imageCoverData = imageData
+    }
+    
     func getNewsTypes() -> [NewsType] {
         return NewsType.allCases
+    }
+    
+    func numberOfItems(inSection section: Int) -> Int {
+        return getNews(for: selectedNewsType).count
+    }
+    
+    func numberOfRows(inSection section: Int) -> Int {
+        guard let sectionType = SectionType(rawValue: section) else { return 0 }
+        switch sectionType {
+        case .horizontal:
+            return 1
+        case .vertical:
+            return getNews(for: selectedNewsType).count
+        }
     }
 }
