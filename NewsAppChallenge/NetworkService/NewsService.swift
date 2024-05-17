@@ -44,8 +44,8 @@ class NewsService: NewsServiceProtocol {
         return result
         
     }
-    
-    func fecthImage(url: String, completionBlock: @escaping (Result<Data, any Error>) -> ()) {
+
+    func fetchImage(url: String, completionBlock: @escaping (Result<Data, any Error>) -> ()) {
         guard let url = URL(string: url) else {
             return
         }
