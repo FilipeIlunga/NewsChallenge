@@ -11,8 +11,8 @@ class NewsDetailViewController: UIViewController {
     let news: News
     
     init(news: News) {
-        super.init(nibName: <#T##String?#>, bundle: <#T##Bundle?#>)
         self.news = news
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -21,5 +21,7 @@ class NewsDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = news.title
+        view.backgroundColor = .red
     }
 }
