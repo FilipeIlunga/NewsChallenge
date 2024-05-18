@@ -44,8 +44,10 @@ class NewsHomeViewController: UIViewController {
         setupView()
         setupConstraints()
         selectInitialFilter()
-        viewModel.fetchAllNews()
-        tableView.reloadData()
+        Task {
+            await viewModel.fetchAllNews()
+            tableView.reloadData()
+        }
     }
     
     // MARK: - Setup
@@ -117,16 +119,17 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
             return UICollectionViewCell()
         }
         let newsItem = viewModel.getNews()[indexPath.item]
-        if let imageData = newsItem.imageCoverData {
-            cell.updateImage(imageData)
-        } else {
-            if let urlImage = newsItem.urlToImage {
-                viewModel.fetchImage(url: urlImage) { result in
+        cell.configureCell(news: newsItem)
+        if let urlImage = newsItem.urlToImage {
+            if let cachedData = CacheManager.shared.value(forKey: urlImage) as Data? {
+                cell.updateImage(cachedData)
+            } else {
+                viewModel.fetchImage(url: urlImage) { [weak cell] result in
                     switch result {
                     case .success(let data):
+                        CacheManager.shared.setValue(data, forKey: urlImage)
                         DispatchQueue.main.async {
-                            self.viewModel.setNewsImage(index: indexPath.row, imageData: data)
-                            cell.updateImage(data)
+                            cell?.updateImage(data)
                         }
                     case .failure(let error):
                         print("Error fetching image: \(error)")
@@ -134,8 +137,6 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
                 }
             }
         }
-        
-        cell.configureCell(news: newsItem)
         return cell
     }
     
@@ -171,28 +172,28 @@ extension NewsHomeViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: NewsTableViewCell.identifier, for: indexPath) as? NewsTableViewCell else {
             return UITableViewCell()
         }
+    
         let newsItem = viewModel.getNews()[indexPath.row]
-        if let imageData = newsItem.imageCoverData {
-            cell.updateImage(imageData)
-        } else {
-            if let urlImage = newsItem.urlToImage {
-                viewModel.fetchImage(url: urlImage) { result in
-                    switch result {
-                    case .success(let data):
-                        DispatchQueue.main.async {
-                            self.viewModel.setNewsImage(index: indexPath.row, imageData: data)
-                            cell.updateImage(data)
-                        }
-                    case .failure(let error):
-                        print("Error fetching image: \(error)")
-                    }
-                }
-            }
-        }
-        
-        cell.configure(news: newsItem)
-        return cell
-    }
+         cell.configure(news: newsItem)
+         if let urlImage = newsItem.urlToImage {
+             if let cachedData = CacheManager.shared.value(forKey: urlImage) as Data? {
+                 cell.updateImage(cachedData)
+             } else {
+                 viewModel.fetchImage(url: urlImage) { [weak cell] result in
+                     switch result {
+                     case .success(let data):
+                         CacheManager.shared.setValue(data, forKey: urlImage)
+                         DispatchQueue.main.async {
+                             cell?.updateImage(data)
+                         }
+                     case .failure(let error):
+                         print("Error fetching image: \(error)")
+                     }
+                 }
+             }
+         }
+         return cell
+     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch indexPath.section {

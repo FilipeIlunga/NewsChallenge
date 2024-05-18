@@ -15,8 +15,7 @@ struct News: Codable {
     let url: String
     let urlToImage: String?
     let publishedAt: String
-    let content: String?    
-    var imageCoverData: Data?
+    let content: String?
     
     enum CodingKeys: String, CodingKey {
         case source

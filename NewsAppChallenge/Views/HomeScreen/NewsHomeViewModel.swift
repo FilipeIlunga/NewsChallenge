@@ -27,11 +27,9 @@ final class NewsHomeViewModel {
         NewsType.allCases.forEach { currentPage[$0] = 10 }
     }
     
-    func fetchAllNews() {
-        Task {
-            for type in NewsType.allCases {
-                await fetchNews(type: type)
-            }
+    func fetchAllNews() async {
+        for type in NewsType.allCases {
+            await fetchNews(type: type)
         }
     }
     
@@ -64,10 +62,6 @@ final class NewsHomeViewModel {
     
     func getNews() -> [News] {
         return news[selectedNewsType] ?? []
-    }
-    
-    func setNewsImage(index: Int ,imageData: Data) {
-        news[selectedNewsType]?[index].imageCoverData = imageData
     }
     
     func getNewsTypes() -> [NewsType] {
