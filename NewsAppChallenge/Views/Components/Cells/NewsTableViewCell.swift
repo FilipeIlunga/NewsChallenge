@@ -86,4 +86,5 @@ class NewsTableViewCell: UITableViewCell {
     func updateImage(_ data: Data) {
         newsImageView.image = UIImage(data: data)
     }
+    
 }

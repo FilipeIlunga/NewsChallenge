@@ -23,6 +23,8 @@ class NewsHomeViewController: UIViewController {
     private let viewModel: NewsHomeViewModel
     private let tableView = UITableView()
     private lazy var newsFilterCollectionView = createNewsFilterCollectionView()
+    weak var coordinator: MainCoordinator?
+
     
     // MARK: - Initialization
     
@@ -114,17 +116,21 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsCardUICollectionViewCell.identifier, for: indexPath) as? NewsCardUICollectionViewCell else {
             return UICollectionViewCell()
         }
-        let newsItem = viewModel.getNews(for: viewModel.selectedNewsType)[indexPath.item]
-        
-        if let urlImage = newsItem.urlToImage {
-            viewModel.fetchImage(url: urlImage) { result in
-                switch result {
-                case .success(let data):
-                    DispatchQueue.main.async {
-                        cell.updateImage(data)
+        let newsItem = viewModel.getNews()[indexPath.item]
+        if let imageData = newsItem.imageCoverData {
+            cell.updateImage(imageData)
+        } else {
+            if let urlImage = newsItem.urlToImage {
+                viewModel.fetchImage(url: urlImage) { result in
+                    switch result {
+                    case .success(let data):
+                        DispatchQueue.main.async {
+                            self.viewModel.setNewsImage(index: indexPath.row, imageData: data)
+                            cell.updateImage(data)
+                        }
+                    case .failure(let error):
+                        print("Error fetching image: \(error)")
                     }
-                case .failure(let error):
-                    print("Error fetching image: \(error)")
                 }
             }
         }
@@ -134,7 +140,7 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // Implement selection logic if needed
+       //let new
     }
 }
 
@@ -165,8 +171,7 @@ extension NewsHomeViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: NewsTableViewCell.identifier, for: indexPath) as? NewsTableViewCell else {
             return UITableViewCell()
         }
-        
-        let newsItem = viewModel.getNews(for: viewModel.selectedNewsType)[indexPath.row]
+        let newsItem = viewModel.getNews()[indexPath.row]
         if let imageData = newsItem.imageCoverData {
             cell.updateImage(imageData)
         } else {
@@ -175,7 +180,7 @@ extension NewsHomeViewController: UITableViewDataSource {
                     switch result {
                     case .success(let data):
                         DispatchQueue.main.async {
-                            self.viewModel.setNewsImage(type: self.viewModel.selectedNewsType, index: indexPath.row, imageData: data)
+                            self.viewModel.setNewsImage(index: indexPath.row, imageData: data)
                             cell.updateImage(data)
                         }
                     case .failure(let error):
@@ -207,7 +212,12 @@ extension NewsHomeViewController: UITableViewDataSource {
 extension NewsHomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Implement selection logic if needed
+        let section = indexPath.section
+
+        guard section == 1 else { return }
+        let news = viewModel.getNews()[indexPath.row]
+        coordinator?.showNewsDetail(news: news)
+        
     }
 }
 
