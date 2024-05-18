@@ -62,12 +62,12 @@ final class NewsHomeViewModel {
         }
     }
     
-    func getNews(for type: NewsType) -> [News] {
-        return news[type] ?? []
+    func getNews() -> [News] {
+        return news[selectedNewsType] ?? []
     }
     
-    func setNewsImage(type: NewsType, index: Int ,imageData: Data) {
-        news[type]?[index].imageCoverData = imageData
+    func setNewsImage(index: Int ,imageData: Data) {
+        news[selectedNewsType]?[index].imageCoverData = imageData
     }
     
     func getNewsTypes() -> [NewsType] {
@@ -75,7 +75,7 @@ final class NewsHomeViewModel {
     }
     
     func numberOfItems(inSection section: Int) -> Int {
-        return getNews(for: selectedNewsType).count
+        return getNews().count
     }
     
     func numberOfRows(inSection section: Int) -> Int {
@@ -84,7 +84,7 @@ final class NewsHomeViewModel {
         case .horizontal:
             return 1
         case .vertical:
-            return getNews(for: selectedNewsType).count
+            return getNews().count
         }
     }
 }
