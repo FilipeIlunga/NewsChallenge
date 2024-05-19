@@ -105,14 +105,18 @@ class NewsHomeViewController: UIViewController {
         tableView.isHidden = false
     }
     
-    private func loadImage(urlString: String?, into imageView: UIImageView) {
+    private func loadImage(urlString: String?, into imageView: UIImageView, indexPath: IndexPath ) {
         guard let urlString = urlString, let url = URL(string: urlString) else {
             // Load default image from assets
             imageView.image = UIImage(named: "imageDefault")
             return
         }
 
-        imageView.loadImage(at: url)
+        imageView.loadImage(at: url) { [weak self] data in
+            if let data = data {
+                self?.viewModel.setImageData(data: data, index: indexPath.row)
+            }
+        }
     }
 }
 
@@ -145,7 +149,7 @@ extension NewsHomeViewController: UITableViewDataSource {
 
         let newsItem = viewModel.getNews()[indexPath.row]
          cell.configure(news: newsItem)
-        loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView)
+        loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView, indexPath: indexPath)
         cell.onReuse = {
             cell.newsImageView.cancelImageLoad()
         }
@@ -176,7 +180,7 @@ extension NewsHomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 50))
         let labelText = section == 0 ? "Main News" : "All News"
-        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffect = UIBlurEffect(style: .regular)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = headerView.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -185,7 +189,7 @@ extension NewsHomeViewController: UITableViewDataSource {
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.preferredFont(forTextStyle: .headline)
-        label.textColor = .black
+        label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         headerView.addSubview(label)
         
@@ -230,7 +234,7 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
         let newsItem = viewModel.getNews()[indexPath.item]
         cell.configureCell(news: newsItem)
         
-        loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView)
+        loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView, indexPath: indexPath)
         cell.onReuse = {
             cell.newsImageView.cancelImageLoad()
         }

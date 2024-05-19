@@ -42,7 +42,7 @@ class NewsFilterCells: UICollectionViewCell {
     
     func configureCell(with newsType: NewsType, isSelected: Bool) {
         label.text = newsType.name
-        contentView.backgroundColor = isSelected ? .label : .systemBackground
+        contentView.backgroundColor = isSelected ? .label : .systemGray.withAlphaComponent(0.15)
         label.textColor = isSelected ? .systemBackground : .label
     }
 }

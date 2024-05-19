@@ -105,23 +105,27 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
     }
     
     private func setConstraints() {
+        let padding: CGFloat = 10.0
+        let spacing: CGFloat = 5.0
+        let imageHeight: CGFloat = 200.0
+        
         NSLayoutConstraint.activate([
             newsImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             newsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             newsImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            newsImageView.heightAnchor.constraint(equalToConstant: 200),
+            newsImageView.heightAnchor.constraint(equalToConstant: imageHeight),
             
-            title.topAnchor.constraint(equalTo: newsImageView.bottomAnchor, constant: 10),
-            title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            title.topAnchor.constraint(equalTo: newsImageView.bottomAnchor, constant: padding),
+            title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             
-            source.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 5),
-            source.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            source.trailingAnchor.constraint(lessThanOrEqualTo: contentView.centerXAnchor, constant: -5),
+            source.topAnchor.constraint(equalTo: title.bottomAnchor, constant: spacing),
+            source.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            source.trailingAnchor.constraint(lessThanOrEqualTo: contentView.centerXAnchor, constant: -spacing),
             
-            publishedAt.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 5),
-            publishedAt.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            publishedAt.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.centerXAnchor, constant: 5)
+            publishedAt.topAnchor.constraint(equalTo: title.bottomAnchor, constant: spacing),
+            publishedAt.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            publishedAt.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.centerXAnchor, constant: spacing)
         ])
     }
     

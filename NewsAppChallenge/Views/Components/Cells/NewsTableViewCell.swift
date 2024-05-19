@@ -63,24 +63,30 @@ class NewsTableViewCell: UITableViewCell {
     }
     
     private func setConstraints() {
+        let imageWidth: CGFloat = 100
+        let imageHeight: CGFloat = 90
+        let padding: CGFloat = 10
+        let horizontalSpacing: CGFloat = 18
+        let verticalSpacing: CGFloat = 4
+        
         NSLayoutConstraint.activate([
-            newsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            newsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
             newsImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            newsImageView.widthAnchor.constraint(equalToConstant: 100),
-            newsImageView.heightAnchor.constraint(equalToConstant: 90),
+            newsImageView.widthAnchor.constraint(equalToConstant: imageWidth),
+            newsImageView.heightAnchor.constraint(equalToConstant: imageHeight),
             
-            titleLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: 18),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            titleLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: horizontalSpacing),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
             
-            descriptionLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: 18),
-            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            descriptionLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: horizontalSpacing),
+            descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: verticalSpacing),
             
-            sourceLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: 18),
-            sourceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            sourceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4),
-            sourceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+            sourceLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: horizontalSpacing),
+            sourceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            sourceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: verticalSpacing),
+            sourceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         ])
     }
     

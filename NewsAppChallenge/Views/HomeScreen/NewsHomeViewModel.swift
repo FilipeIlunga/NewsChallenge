@@ -52,6 +52,10 @@ final class NewsHomeViewModel {
         }
     }
     
+    func setImageData(data: Data, index: Int) {
+        news[selectedNewsType]?[index].imageData = data
+    }
+    
     func getNews() -> [News] {
         return news[selectedNewsType] ?? []
     }

@@ -15,15 +15,17 @@ class UIImageLoader {
 
   private init() {}
 
-    func load(_ url: URL, for imageView: UIImageView) {
+    func load(_ url: URL, for imageView: UIImageView, completion: @escaping (Data?) -> Void) {
         let token = imageLoader.loadImage(url) { result in
             defer { self.uuidMap.removeValue(forKey: imageView) }
             do {
                 let image = try result.get()
                 DispatchQueue.main.async {
                     imageView.image = image
+                    completion(image.pngData())
                 }
             } catch {
+                completion(nil)
             }
         }
         
