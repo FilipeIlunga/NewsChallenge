@@ -92,7 +92,7 @@ class NewsDetailViewController: UIViewController {
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding),
             
-            newsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3),
+            newsImageView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.25),
         ])
     }
     

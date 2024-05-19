@@ -132,9 +132,9 @@ extension NewsHomeViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section = indexPath.section
+        let section = SectionType.allCases[indexPath.section]
 
-        if section == 0 {
+        if section == .horizontal {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HorizontalTableViewCell.identifier, for: indexPath) as? HorizontalTableViewCell else {
                 return UITableViewCell()
             }
@@ -142,13 +142,15 @@ extension NewsHomeViewController: UITableViewDataSource {
             cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, forRow: indexPath.row)
             return cell
         }
+        let newsList = viewModel.getNews()
+        let newsIndex = indexPath.row
         
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: NewsTableViewCell.identifier, for: indexPath) as? NewsTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: NewsTableViewCell.identifier, for: indexPath) as? NewsTableViewCell, newsList.indices.contains(newsIndex) else {
             return UITableViewCell()
         }
 
-        let newsItem = viewModel.getNews()[indexPath.row]
-         cell.configure(news: newsItem)
+        let newsItem = newsList[newsIndex]
+        cell.configure(news: newsItem)
         loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView, indexPath: indexPath)
         cell.onReuse = {
             cell.newsImageView.cancelImageLoad()
@@ -208,8 +210,9 @@ extension NewsHomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section =  SectionType.allCases[indexPath.section]
         let newsIndex = indexPath.row
-        guard section == .vertical else { return }
-        let selectedNews = viewModel.getNews()[newsIndex]
+        let newsList = viewModel.getNews()
+        guard section == .vertical, newsList.indices.contains(newsIndex) else { return }
+        let selectedNews = newsList[newsIndex]
         coordinator?.showNewsDetail(news: selectedNews)
     }
 }
@@ -228,10 +231,12 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsCardUICollectionViewCell.identifier, for: indexPath) as? NewsCardUICollectionViewCell else {
+        let newsList = viewModel.getNews()
+        let newsIndex = indexPath.item
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsCardUICollectionViewCell.identifier, for: indexPath) as? NewsCardUICollectionViewCell, newsList.indices.contains(newsIndex) else {
             return UICollectionViewCell()
         }
-        let newsItem = viewModel.getNews()[indexPath.item]
+        let newsItem = newsList[newsIndex]
         cell.configureCell(news: newsItem)
         
         loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView, indexPath: indexPath)
@@ -243,6 +248,9 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       //let new
+        let newsList = viewModel.getNews()
+        guard newsList.indices.contains(indexPath.item) else { return }
+        let news = newsList[indexPath.item]
+        coordinator?.showNewsDetail(news: news)
     }
 }
