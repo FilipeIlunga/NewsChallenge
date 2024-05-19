@@ -8,8 +8,8 @@
 import UIKit
  
 class NewsHomeViewController: UIViewController {
-    // MARK: - Properties
     
+    // MARK: - Properties
     private let viewModel: NewsHomeViewModel
     private let tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
@@ -160,14 +160,24 @@ extension NewsHomeViewController: UITableViewDataSource {
      }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.section {
-        case 0: return 300
-        default:
-            return 100
+        let section = SectionType.allCases[indexPath.section]
+        let horizontalTableViewCellHeight: CGFloat = 300
+        let verticalTableViewCellHeight: CGFloat = 100
+        
+        switch section {
+            case .horizontal:
+                return horizontalTableViewCellHeight
+            case .vertical:
+                return verticalTableViewCellHeight
         }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let section = SectionType.allCases[indexPath.section]
+
+        if section == .horizontal {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: cell.bounds.size.width, bottom: 0, right: 0)
+        }
 //        let lastRowIndex = tableView.numberOfRows(inSection: indexPath.section) - 1
 //        if indexPath.row == lastRowIndex {
 //            Task {
@@ -181,7 +191,9 @@ extension NewsHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 50))
-        let labelText = section == 0 ? "Main News" : "All News"
+        let section = SectionType.allCases[section]
+
+        let labelText = section == .horizontal ? "Main News" : "All News"
         let blurEffect = UIBlurEffect(style: .regular)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = headerView.bounds
