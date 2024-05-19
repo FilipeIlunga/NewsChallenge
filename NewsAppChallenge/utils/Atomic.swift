@@ -6,8 +6,8 @@
 //
 
 import Foundation
-
-// Source: https://medium.com/@vujnovacluka89/swift-atomic-properties-effd7a73070
+// Problem: https://amrit-pandey.medium.com/threadsafe-swift-collections-c90a94c0d269
+// Solution: https://medium.com/@vujnovacluka89/swift-atomic-properties-effd7a73070
 @propertyWrapper
 final public class Atomic<Value> {
     private let queue = DispatchQueue(label: "com.ilunga.atomic", qos: .userInitiated)
