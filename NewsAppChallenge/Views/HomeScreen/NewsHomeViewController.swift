@@ -162,7 +162,7 @@ extension NewsHomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let section = SectionType.allCases[indexPath.section]
         let horizontalTableViewCellHeight: CGFloat = 300
-        let verticalTableViewCellHeight: CGFloat = 100
+        let verticalTableViewCellHeight: CGFloat = 110
         
         switch section {
             case .horizontal:

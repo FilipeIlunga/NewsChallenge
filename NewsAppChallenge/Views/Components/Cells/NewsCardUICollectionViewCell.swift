@@ -26,7 +26,7 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private lazy var publishedAt: UILabel = {
+    private lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: .footnote)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +47,7 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(newsImageView)
         contentView.addSubview(title)
-        contentView.addSubview(publishedAt)
+        contentView.addSubview(authorLabel)
         contentView.addSubview(source)
 
         setConstraints()
@@ -69,23 +69,23 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
             newsImageView.heightAnchor.constraint(equalToConstant: imageHeight),
             
             title.topAnchor.constraint(equalTo: newsImageView.bottomAnchor, constant: padding),
-            title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            title.leadingAnchor.constraint(equalTo: newsImageView.leadingAnchor),
+            title.trailingAnchor.constraint(equalTo: newsImageView.trailingAnchor),
             
             source.topAnchor.constraint(equalTo: title.bottomAnchor, constant: spacing),
-            source.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            source.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             source.trailingAnchor.constraint(lessThanOrEqualTo: contentView.centerXAnchor, constant: -spacing),
             
-            publishedAt.topAnchor.constraint(equalTo: title.bottomAnchor, constant: spacing),
-            publishedAt.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-            publishedAt.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.centerXAnchor, constant: spacing)
+            authorLabel.topAnchor.constraint(equalTo: title.bottomAnchor, constant: spacing),
+            authorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            authorLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.centerXAnchor, constant: spacing)
         ])
     }
     
     func configureCell(news: News) {
         title.text = news.title
         source.text = news.source.name
-        publishedAt.text = news.publishedAt
+        authorLabel.text = news.author
     }
     
     func updateImage(_ uiimage: UIImage) {

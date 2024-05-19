@@ -14,7 +14,7 @@ class NewsTableViewCell: UITableViewCell {
     let newsImageView = UIImageView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
-    private let sourceLabel = UILabel()
+    private let authorLabel = UILabel()
     static let identifier = "NewsTableViewCell"
     var onReuse: () -> Void = {}
 
@@ -50,16 +50,16 @@ class NewsTableViewCell: UITableViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         descriptionLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
-        descriptionLabel.numberOfLines = 2
+        descriptionLabel.numberOfLines = 1
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        sourceLabel.font = UIFont.systemFont(ofSize: 12, weight: .light)
-        sourceLabel.translatesAutoresizingMaskIntoConstraints = false
+        authorLabel.font = UIFont.systemFont(ofSize: 12, weight: .light)
+        authorLabel.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(newsImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(descriptionLabel)
-        contentView.addSubview(sourceLabel)
+        contentView.addSubview(authorLabel)
     }
     
     private func setConstraints() {
@@ -67,7 +67,7 @@ class NewsTableViewCell: UITableViewCell {
         let imageHeight: CGFloat = 90
         let padding: CGFloat = 10
         let horizontalSpacing: CGFloat = 18
-        let verticalSpacing: CGFloat = 4
+        let verticalSpacing: CGFloat = 8
         
         NSLayoutConstraint.activate([
             newsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
@@ -77,23 +77,22 @@ class NewsTableViewCell: UITableViewCell {
             
             titleLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: horizontalSpacing),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            titleLabel.topAnchor.constraint(equalTo: newsImageView.topAnchor),
             
-            descriptionLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: horizontalSpacing),
+            descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: verticalSpacing),
             
-            sourceLabel.leadingAnchor.constraint(equalTo: newsImageView.trailingAnchor, constant: horizontalSpacing),
-            sourceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-            sourceLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: verticalSpacing),
-            sourceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
+            authorLabel.trailingAnchor.constraint(equalTo: descriptionLabel.trailingAnchor),
+            authorLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: verticalSpacing),
+            authorLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: verticalSpacing)
         ])
     }
     
     func configure(news: News) {
         titleLabel.text = news.title
         descriptionLabel.text = news.description
-        sourceLabel.text = news.source.name
+        authorLabel.text = news.author
     }
     
     func updateImage(_ uiimage: UIImage) {
