@@ -11,12 +11,13 @@ class NewsTableViewCell: UITableViewCell {
     
     // MARK: - Properties
     
-    private let newsImageView = UIImageView()
+    let newsImageView = UIImageView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let sourceLabel = UILabel()
     static let identifier = "NewsTableViewCell"
-    
+    var onReuse: () -> Void = {}
+
     // MARK: - Initialization
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -28,6 +29,12 @@ class NewsTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+      super.prepareForReuse()
+      onReuse()
+      newsImageView.image = nil
     }
     
     // MARK: - Setup
@@ -83,8 +90,8 @@ class NewsTableViewCell: UITableViewCell {
         sourceLabel.text = news.source.name
     }
     
-    func updateImage(_ data: Data) {
-        newsImageView.image = UIImage(data: data)
+    func updateImage(_ uiimage: UIImage) {
+        newsImageView.image = uiimage
     }
     
 }

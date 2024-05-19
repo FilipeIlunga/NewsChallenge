@@ -5,29 +5,28 @@
 //  Created by Filipe Ilunga on 14/05/24.
 //
 
-//
-//  NewsHomeViewController.swift
-//  NewsAppChallenge
-//
-//  Created by Filipe Ilunga on 14/05/24.
-//
-
 import UIKit
  
 class NewsHomeViewController: UIViewController {
-
-    
-    
     // MARK: - Properties
     
     private let viewModel: NewsHomeViewModel
     private let tableView = UITableView()
-    private lazy var newsFilterCollectionView = createNewsFilterCollectionView()
+    private let activityIndicator = UIActivityIndicatorView(style: .medium)
+    private lazy var newsFilterCollectionView: NewsFilterUICollectionView  = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let collectionView = NewsFilterUICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
+        collectionView.contentInsetAdjustmentBehavior = .never
+        collectionView.filterDelegate = self
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
     weak var coordinator: MainCoordinator?
-
+    var loader = ImageLoader()
     
     // MARK: - Initialization
-    
     init(viewModel: NewsHomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -38,31 +37,23 @@ class NewsHomeViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupConstraints()
         selectInitialFilter()
-        Task {
-            await viewModel.fetchAllNews()
-            tableView.reloadData()
-        }
+        setupTableView()
+        fetchAllNews()
     }
     
     // MARK: - Setup
-    
     private func setupView() {
         view.backgroundColor = .systemBackground
         
-        [newsFilterCollectionView, tableView].forEach {
+        [newsFilterCollectionView, tableView, activityIndicator].forEach {
             view.addSubview($0)
         }
-        
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(NewsTableViewCell.self, forCellReuseIdentifier: NewsTableViewCell.identifier)
-        tableView.register(HorizontalTableViewCell.self, forCellReuseIdentifier: HorizontalTableViewCell.identifier)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -72,24 +63,30 @@ class NewsHomeViewController: UIViewController {
             newsFilterCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             newsFilterCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             newsFilterCollectionView.heightAnchor.constraint(equalToConstant: 50),
-            tableView.topAnchor.constraint(equalTo: newsFilterCollectionView.bottomAnchor, constant: 10),
+            tableView.topAnchor.constraint(equalTo: newsFilterCollectionView.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
     
-    // MARK: - Private Methods
+    private func setupTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(NewsTableViewCell.self, forCellReuseIdentifier: NewsTableViewCell.identifier)
+        tableView.register(HorizontalTableViewCell.self, forCellReuseIdentifier: HorizontalTableViewCell.identifier)
+    }
     
-    private func createNewsFilterCollectionView() -> NewsFilterUICollectionView {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        let collectionView = NewsFilterUICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
-        collectionView.contentInsetAdjustmentBehavior = .never
-        collectionView.filterDelegate = self
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
+    // MARK: - Private Methods
+    private func fetchAllNews() {
+        startActivityIndicator()
+        Task {
+            await viewModel.fetchAllNews()
+            stopActivityIndicator()
+            tableView.reloadData()
+        }
     }
     
     private func selectInitialFilter() {
@@ -98,55 +95,28 @@ class NewsHomeViewController: UIViewController {
         newsFilterCollectionView.delegate?.collectionView?(newsFilterCollectionView, didSelectItemAt: firstIndexPath)
     }
     
-//    private func loadNews() {
-//        Task {
-//            await viewModel.fetchNews(type: viewModel.selectedNewsType)
-//            DispatchQueue.main.async {
-//                self.tableView.reloadData()
-//            }
-//        }
-//    }
-}
+    private func startActivityIndicator() {
+        activityIndicator.startAnimating()
+        tableView.isHidden = true
+    }
+    
+    private func stopActivityIndicator() {
+        activityIndicator.stopAnimating()
+        tableView.isHidden = false
+    }
+    
+    private func loadImage(urlString: String?, into imageView: UIImageView) {
+        guard let urlString = urlString, let url = URL(string: urlString) else {
+            // Load default image from assets
+            imageView.image = UIImage(named: "imageDefault")
+            return
+        }
 
-extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.numberOfItems(inSection: section)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsCardUICollectionViewCell.identifier, for: indexPath) as? NewsCardUICollectionViewCell else {
-            return UICollectionViewCell()
-        }
-        let newsItem = viewModel.getNews()[indexPath.item]
-        cell.configureCell(news: newsItem)
-        if let urlImage = newsItem.urlToImage {
-            if let cachedData = CacheManager.shared.value(forKey: urlImage) as Data? {
-                cell.updateImage(cachedData)
-            } else {
-                viewModel.fetchImage(url: urlImage) { [weak cell] result in
-                    switch result {
-                    case .success(let data):
-                        CacheManager.shared.setValue(data, forKey: urlImage)
-                        DispatchQueue.main.async {
-                            cell?.updateImage(data)
-                        }
-                    case .failure(let error):
-                        print("Error fetching image: \(error)")
-                    }
-                }
-            }
-        }
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       //let new
+        imageView.loadImage(at: url)
     }
 }
 
 // MARK: - UITableViewDataSource
-
 extension NewsHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -172,26 +142,14 @@ extension NewsHomeViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: NewsTableViewCell.identifier, for: indexPath) as? NewsTableViewCell else {
             return UITableViewCell()
         }
-    
+
         let newsItem = viewModel.getNews()[indexPath.row]
          cell.configure(news: newsItem)
-         if let urlImage = newsItem.urlToImage {
-             if let cachedData = CacheManager.shared.value(forKey: urlImage) as Data? {
-                 cell.updateImage(cachedData)
-             } else {
-                 viewModel.fetchImage(url: urlImage) { [weak cell] result in
-                     switch result {
-                     case .success(let data):
-                         CacheManager.shared.setValue(data, forKey: urlImage)
-                         DispatchQueue.main.async {
-                             cell?.updateImage(data)
-                         }
-                     case .failure(let error):
-                         print("Error fetching image: \(error)")
-                     }
-                 }
-             }
-         }
+        loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView)
+        cell.onReuse = {
+            cell.newsImageView.cancelImageLoad()
+        }
+        
          return cell
      }
     
@@ -206,19 +164,41 @@ extension NewsHomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
     }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 50))
+        let labelText = section == 0 ? "Main News" : "All News"
+        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = headerView.bounds
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        headerView.addSubview(blurEffectView)
+        
+        let label = UILabel()
+        label.text = labelText
+        label.font = UIFont.preferredFont(forTextStyle: .headline)
+        label.textColor = .black
+        label.translatesAutoresizingMaskIntoConstraints = false
+        headerView.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+            label.leadingAnchor.constraint(greaterThanOrEqualTo: headerView.leadingAnchor, constant: 10),
+        ])
+        
+        return headerView
+    }
 }
 
 // MARK: - UITableViewDelegate
-
 extension NewsHomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = indexPath.section
-
-        guard section == 1 else { return }
-        let news = viewModel.getNews()[indexPath.row]
-        coordinator?.showNewsDetail(news: news)
-        
+        let section =  SectionType.allCases[indexPath.section]
+        let newsIndex = indexPath.row
+        guard section == .horizontal else { return }
+        let selectedNews = viewModel.getNews()[newsIndex]
+        coordinator?.showNewsDetail(news: selectedNews)
     }
 }
 
@@ -226,5 +206,31 @@ extension NewsHomeViewController: NewsFilterUICollectionViewProtocol {
     func didSelectedFilter(newsType: NewsType) {
         viewModel.selectedNewsType = newsType
         tableView.reloadData()
+    }
+}
+
+extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.numberOfItems(inSection: section)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewsCardUICollectionViewCell.identifier, for: indexPath) as? NewsCardUICollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        let newsItem = viewModel.getNews()[indexPath.item]
+        cell.configureCell(news: newsItem)
+        
+        loadImage(urlString: newsItem.urlToImage, into: cell.newsImageView)
+        cell.onReuse = {
+            cell.newsImageView.cancelImageLoad()
+        }
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+       //let new
     }
 }

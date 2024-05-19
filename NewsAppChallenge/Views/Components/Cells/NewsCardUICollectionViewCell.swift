@@ -56,6 +56,7 @@ class HorizontalTableViewCell: UITableViewCell {
 
 class NewsCardUICollectionViewCell: UICollectionViewCell {
     static let identifier: String = "NewsCardUICollectionViewCell"
+    var onReuse: () -> Void = {}
 
     private lazy var title: UILabel = {
         let label = UILabel()
@@ -79,7 +80,7 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private lazy var imageView: UIImageView = {
+    lazy var newsImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
@@ -91,7 +92,7 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        contentView.addSubview(imageView)
+        contentView.addSubview(newsImageView)
         contentView.addSubview(title)
         contentView.addSubview(publishedAt)
         contentView.addSubview(source)
@@ -105,12 +106,12 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
     
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 200),
+            newsImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            newsImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            newsImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            newsImageView.heightAnchor.constraint(equalToConstant: 200),
             
-            title.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 10),
+            title.topAnchor.constraint(equalTo: newsImageView.bottomAnchor, constant: 10),
             title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             title.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
@@ -130,7 +131,13 @@ class NewsCardUICollectionViewCell: UICollectionViewCell {
         publishedAt.text = news.publishedAt
     }
     
-    func updateImage(_ data: Data) {
-        imageView.image = UIImage(data: data)
+    func updateImage(_ uiimage: UIImage) {
+        newsImageView.image = uiimage
+    }
+    
+    override func prepareForReuse() {
+      super.prepareForReuse()
+      onReuse()
+        newsImageView.image = nil
     }
 }
