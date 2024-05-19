@@ -9,7 +9,7 @@ import Foundation
 
 enum NewsType: String, CaseIterable {
     case apple = "apple"
-    case tesla = "tesla"
+   // case tesla = "tesla"
     case business = "business"
     case techCrunch = "techcrunch"
     case wallStreetJournal = "wsj.com"
@@ -20,7 +20,7 @@ enum NewsType: String, CaseIterable {
 
     private var path: String {
         switch self {
-        case .apple, .tesla, .wallStreetJournal:
+        case .apple, .wallStreetJournal:
             return "everything"
         case .business, .techCrunch:
             return "top-headlines"
@@ -31,8 +31,8 @@ enum NewsType: String, CaseIterable {
         switch self {
         case .apple:
             return "Apple"
-        case .tesla:
-            return "Tesla"
+//        case .tesla:
+//            return "Tesla"
         case .business:
             return "Business"
         case .techCrunch:
@@ -51,10 +51,10 @@ enum NewsType: String, CaseIterable {
                                       URLQueryItem(name: "from", value: "2024-05-14"),
                                       URLQueryItem(name: "to", value: "2024-05-14"),
                                       URLQueryItem(name: "sortBy", value: "popularity")])
-        case .tesla:
-            items.append(contentsOf: [URLQueryItem(name: "q", value: rawValue),
-                                      URLQueryItem(name: "from", value: "2024-04-15"),
-                                      URLQueryItem(name: "sortBy", value: "publishedAt")])
+//        case .tesla:
+//            items.append(contentsOf: [URLQueryItem(name: "q", value: rawValue),
+//                                      URLQueryItem(name: "from", value: "2024-04-15"),
+//                                      URLQueryItem(name: "sortBy", value: "publishedAt")])
         case .business:
             items.append(contentsOf: [URLQueryItem(name: "country", value: "us"),
                                       URLQueryItem(name: "category", value: rawValue)])

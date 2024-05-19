@@ -34,7 +34,7 @@ final class NewsHomeViewModel {
     }
     
     func fetchNews(type: NewsType) async {
-        guard let page = currentPage[type], type != .tesla else { return }
+        guard let page = currentPage[type] else { return }
         
         do {
             let result: NewsDataResponse = try await newsService.fetchNews(type: type, page: page)
