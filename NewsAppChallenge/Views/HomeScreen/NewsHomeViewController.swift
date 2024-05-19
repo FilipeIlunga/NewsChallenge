@@ -162,7 +162,15 @@ extension NewsHomeViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        
+//        let lastRowIndex = tableView.numberOfRows(inSection: indexPath.section) - 1
+//        if indexPath.row == lastRowIndex {
+//            Task {
+//                await viewModel.fetchNews(type: viewModel.selectedNewsType)
+//                DispatchQueue.main.async {
+//                    tableView.reloadData()
+//                }
+//            }
+//        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -196,7 +204,7 @@ extension NewsHomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section =  SectionType.allCases[indexPath.section]
         let newsIndex = indexPath.row
-        guard section == .horizontal else { return }
+        guard section == .vertical else { return }
         let selectedNews = viewModel.getNews()[newsIndex]
         coordinator?.showNewsDetail(news: selectedNews)
     }

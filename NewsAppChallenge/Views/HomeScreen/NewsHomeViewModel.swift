@@ -4,14 +4,6 @@
 //
 //  Created by Filipe Ilunga on 15/05/24.
 //
-
-enum SectionType: Int, CaseIterable {
-    case horizontal = 0
-    case vertical = 1
-}
-
-
-import Foundation
 import UIKit
 
 final class NewsHomeViewModel {
@@ -24,7 +16,7 @@ final class NewsHomeViewModel {
 
     init(newsService: NewsServiceProtocol) {
         self.newsService = newsService
-        NewsType.allCases.forEach { currentPage[$0] = 10 }
+        NewsType.allCases.forEach { currentPage[$0] = 20 }
     }
     
     func fetchAllNews() async {
