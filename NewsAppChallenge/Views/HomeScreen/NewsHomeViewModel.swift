@@ -87,9 +87,12 @@ final class NewsHomeViewModel {
     }
     
     func setImageData(data: Data, index: Int) {
-        news[selectedNewsType]?[index].imageData = data
+        if news.keys.contains(selectedNewsType), news[selectedNewsType]?.indices.contains(index) == true {
+            news[selectedNewsType]?[index].imageData = data
+        } else {
+            print("Chave não encontrada ou índice fora do intervalo")
+        }
     }
-    
     func getNews() -> [News] {
         return news[selectedNewsType] ?? []
     }
