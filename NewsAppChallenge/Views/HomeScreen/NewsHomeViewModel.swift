@@ -7,7 +7,9 @@
 import UIKit
 
 protocol NewsObserver: AnyObject {
+    func onStarNewstUpdating()
     func newsDidUpdate()
+    func onEndNewsUpdate()
 }
 
 final class NewsHomeViewModel {
@@ -16,7 +18,6 @@ final class NewsHomeViewModel {
     @Atomic private(set) var news: [NewsType: [News]] = [:]
     private var currentPage: [NewsType: Int] = [:]
     var selectedNewsType: NewsType = .apple
-    var onUpdate: (() -> Void)?
 
     let newsService: NewsServiceProtocol
 
@@ -33,7 +34,7 @@ final class NewsHomeViewModel {
     
     func fetchNews(type: NewsType)  {
         guard let page = currentPage[type], let url = type.url(page: page) else { return }
-        
+        observer?.onStarNewstUpdating()
         newsService.request(url: url) { result in
             switch result {
             case let .success((data, response)):
@@ -48,13 +49,16 @@ final class NewsHomeViewModel {
                         }
                         self.currentPage[type] = page + 1
                         self.observer?.newsDidUpdate()
+                        self.observer?.onEndNewsUpdate()
                     } catch let error {
                         print("Error: \(error.localizedDescription)")
+                        self.observer?.onEndNewsUpdate()
                     }
                 }
                 break
             case .failure(let error):
                 print("error on: \(error.localizedDescription)")
+                self.observer?.onEndNewsUpdate()
             }
         }
     }

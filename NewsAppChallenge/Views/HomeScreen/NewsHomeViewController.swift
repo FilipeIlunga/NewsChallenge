@@ -44,7 +44,7 @@ class NewsHomeViewController: UIViewController {
         setupConstraints()
         selectInitialFilter()
         setupTableView()
-        fetchAllNews()
+        viewModel.fetchAllNews()
     }
     
     // MARK: - Setup
@@ -83,15 +83,6 @@ class NewsHomeViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-    private func fetchAllNews() {
-        startActivityIndicator()
-        Task {
-            await viewModel.fetchAllNews()
-            stopActivityIndicator()
-            tableView.reloadData()
-        }
-    }
-    
     private func selectInitialFilter() {
         let firstIndexPath = IndexPath(item: 0, section: 0)
         newsFilterCollectionView.selectItem(at: firstIndexPath, animated: false, scrollPosition: .left)
@@ -277,6 +268,14 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
 }
 
 extension NewsHomeViewController: NewsObserver {
+    func onStarNewstUpdating() {
+        startActivityIndicator()
+    }
+    
+    func onEndNewsUpdate() {
+        stopActivityIndicator()
+    }
+    
     func newsDidUpdate() {
         DispatchQueue.main.async {
              self.tableView.reloadData()
