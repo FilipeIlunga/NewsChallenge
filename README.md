@@ -12,7 +12,7 @@
 
 <p>A chave da API está publicamente disponível neste projeto apenas para fins de teste. Em um cenário real, eu armazenaria a chave da API de forma segura no arquivo <code>config.plist</code> para evitar a exposição de informações sensíveis.</p>
 
-<h2>Snapshot</h2>
+<h2>Screenshots</h2>
 
 <img src="https://github.com/FilipeIlunga/NewsChallenge/assets/45888235/1d2f816e-f9ab-49bb-b637-67410a8886bf" alt="Imagem da interface do projeto">
 <img src="https://github.com/FilipeIlunga/NewsChallenge/assets/45888235/0f1cda28-fdfe-4f04-93cd-d17d931ea7dd" alt="Imagem da interface do projeto">
