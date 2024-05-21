@@ -8,13 +8,12 @@
 import Foundation
 
 class NetworkService: NewsServiceProtocol {
-    
     private var session = URLSession(configuration: .default)
     init(session: URLSession) {
         self.session = session
     }
     
-    func request<T: Decodable>(url: URL, type: T.Type, completion: @escaping (Result<T, Error>) -> Void) {
+    func request<T: Decodable>(url: URL, type: T.Type, completion: @escaping (NetworkResult) -> Void) {
         let dataTask = session.dataTask(with: url) { data, response, error in
             if let error = error {
                 completion(.failure(error))
