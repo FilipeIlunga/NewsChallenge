@@ -9,12 +9,21 @@ import XCTest
 @testable import NewsAppChallenge
 
 final class NetworkServiceTest: XCTestCase {
+    var url: URL!
+    var session: URLSessionSpy!
+    var task: URLSessionDataTaskSpy!
+    var sut: NetworkService!
+    
+    override func setUp() {
+         super.setUp()
+         url = URL(string: "https://newschallengeapp.com.br")!
+         session = URLSessionSpy()
+         task = URLSessionDataTaskSpy()
+         sut = NetworkService(session: session)
+     }
     
     func testLoadRequestResumeDataTaskWithUrl() {
-        let url = URL(string: "https://newschallengeapp.com.br")!
-        let session = URLSessionSpy()
-        let task = URLSessionDataTaskSpy()
-        let sut = NetworkService(session: session)
+
         session.stubs(url: url, task: task)
         sut.request(url: url) { _ in }
 
