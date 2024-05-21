@@ -7,17 +7,15 @@
 
 import Foundation
 
-class NewsService: NewsServiceProtocol {
+class NetworkService: NewsServiceProtocol {
     
-    private let defaultSession = URLSession(configuration: .default)
+    private var session = URLSession(configuration: .default)
+    init(session: URLSession) {
+        self.session = session
+    }
     
-    func fetchNews<T: Decodable>(type: NewsType, page: Int, completion: @escaping (Result<T, Error>) -> Void) {
-        guard let url = type.url(page: page) else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "URL inválida"])))
-            return
-        }
-        
-        let dataTask = defaultSession.dataTask(with: url) { data, response, error in
+    func request<T: Decodable>(url: URL, type: T.Type, completion: @escaping (Result<T, Error>) -> Void) {
+        let dataTask = session.dataTask(with: url) { data, response, error in
             if let error = error {
                 completion(.failure(error))
             } else if let data = data {
@@ -34,12 +32,9 @@ class NewsService: NewsServiceProtocol {
         dataTask.resume()
     }
     
-    func fetchNews<T: Decodable>(type: NewsType, page: Int) async throws -> T {
-        guard let url = type.url(page: page) else {
-            throw NetworkError.badURL
-        }
+    func request<T: Decodable>(url: URL, type: T.Type) async throws -> T {
         
-        let (data, _) = try await defaultSession.data(from: url)
+        let (data, _) = try await session.data(from: url)
         let result: T = try decode(data: data)
         return result
         
@@ -50,7 +45,7 @@ class NewsService: NewsServiceProtocol {
             return
         }
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        session.dataTask(with: url) { data, response, error in
             if let error = error {
                 completionBlock(.failure(error))
             }
