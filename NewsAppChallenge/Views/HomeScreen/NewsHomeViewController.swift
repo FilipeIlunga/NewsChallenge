@@ -127,7 +127,13 @@ class NewsHomeViewController: UIViewController {
 extension NewsHomeViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRows(inSection: section)
+        guard let sectionType = SectionType(rawValue: section) else { return 0 }
+        switch sectionType {
+        case .horizontal:
+            return 1
+        case .vertical:
+            return viewModel.getNews().count
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -242,7 +248,7 @@ extension NewsHomeViewController: NewsFilterUICollectionViewProtocol {
 extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.numberOfItems(inSection: section)
+        return viewModel.getNews().count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

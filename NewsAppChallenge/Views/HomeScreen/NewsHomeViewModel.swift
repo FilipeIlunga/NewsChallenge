@@ -12,8 +12,8 @@ protocol NewsObserver: AnyObject {
 
 final class NewsHomeViewModel {
     
-    private weak var observer: NewsObserver?
-    @Atomic private var news: [NewsType: [News]] = [:]
+    private(set) weak var observer: NewsObserver? = nil
+    @Atomic private(set) var news: [NewsType: [News]] = [:]
     private var currentPage: [NewsType: Int] = [:]
     var selectedNewsType: NewsType = .apple
     var onUpdate: (() -> Void)?
@@ -25,13 +25,13 @@ final class NewsHomeViewModel {
         NewsType.allCases.forEach { currentPage[$0] = 20 }
     }
     
-    func fetchAllNews() async {
+    func fetchAllNews()  {
         for type in NewsType.allCases {
-            await fetchNews(type: type)
+            fetchNews(type: type)
         }
     }
     
-    func fetchNews(type: NewsType) async {
+    func fetchNews(type: NewsType)  {
         guard let page = currentPage[type], let url = type.url(page: page) else { return }
         
         newsService.request(url: url) { result in
@@ -79,24 +79,6 @@ final class NewsHomeViewModel {
     
     func getNews() -> [News] {
         return news[selectedNewsType] ?? []
-    }
-    
-    func getNewsTypes() -> [NewsType] {
-        return NewsType.allCases
-    }
-    
-    func numberOfItems(inSection section: Int) -> Int {
-        return getNews().count
-    }
-    
-    func numberOfRows(inSection section: Int) -> Int {
-        guard let sectionType = SectionType(rawValue: section) else { return 0 }
-        switch sectionType {
-        case .horizontal:
-            return 1
-        case .vertical:
-            return getNews().count
-        }
     }
     
     func addObserver(_ observer: NewsObserver) {
