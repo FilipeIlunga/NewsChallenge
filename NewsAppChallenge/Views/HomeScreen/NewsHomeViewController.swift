@@ -30,6 +30,7 @@ class NewsHomeViewController: UIViewController {
     init(viewModel: NewsHomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        viewModel.addObserver(self)
     }
     
     required init?(coder: NSCoder) {
@@ -266,5 +267,13 @@ extension NewsHomeViewController: UICollectionViewDataSource, UICollectionViewDe
         guard newsList.indices.contains(indexPath.item) else { return }
         let news = newsList[indexPath.item]
         coordinator?.showNewsDetail(news: news)
+    }
+}
+
+extension NewsHomeViewController: NewsObserver {
+    func newsDidUpdate() {
+        DispatchQueue.main.async {
+             self.tableView.reloadData()
+         }
     }
 }

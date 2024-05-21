@@ -8,8 +8,6 @@
 import Foundation
 
 protocol NewsServiceProtocol {
-    typealias NetworkResult = Result<Decodable, Error>
-    func request<T: Decodable>(url: URL, type: T.Type, completion: @escaping (NetworkResult) -> Void)
-    func request<T: Decodable>(url: URL, type: T.Type) async throws -> T
-    func fetchImage(url: String, completionBlock: @escaping (Result<Data,Error>) -> ())
+    typealias NetworkResult = Result<(Data,HTTPURLResponse), Error>
+    func request(url: URL, completion: @escaping (NetworkResult) -> Void)
 }

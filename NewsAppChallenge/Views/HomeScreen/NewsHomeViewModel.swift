@@ -6,12 +6,18 @@
 //
 import UIKit
 
+protocol NewsObserver: AnyObject {
+    func newsDidUpdate()
+}
+
 final class NewsHomeViewModel {
     
+    private weak var observer: NewsObserver?
     @Atomic private var news: [NewsType: [News]] = [:]
     private var currentPage: [NewsType: Int] = [:]
     var selectedNewsType: NewsType = .apple
-    
+    var onUpdate: (() -> Void)?
+
     let newsService: NewsServiceProtocol
 
     init(newsService: NewsServiceProtocol) {
@@ -28,26 +34,40 @@ final class NewsHomeViewModel {
     func fetchNews(type: NewsType) async {
         guard let page = currentPage[type], let url = type.url(page: page) else { return }
         
-        do {
-            
-            let result: NewsDataResponse = try await newsService.request(url: url, type: NewsDataResponse.self)
-            if let currentNews = news[type] {
-                news[type] = currentNews + result.articles
-            } else {
-                news[type] = result.articles
+        newsService.request(url: url) { result in
+            switch result {
+            case let .success((data, response)):
+                DispatchQueue.main.async {
+                    let decoder: JSONDecoder = JSONDecoder()
+                    do {
+                        let result: NewsDataResponse = try decoder.decode(NewsDataResponse.self, from: data)
+                        if let currentNews = self.news[type] {
+                            self.news[type] = currentNews + result.articles
+                        } else {
+                            self.news[type] = result.articles
+                        }
+                        self.currentPage[type] = page + 1
+                        self.observer?.newsDidUpdate()
+                    } catch let error {
+                        print("Error: \(error.localizedDescription)")
+                    }
+                }
+                break
+            case .failure(let error):
+                print("error on: \(error.localizedDescription)")
             }
-            currentPage[type] = page + 1
-        } catch {
-            print("Error on \(#function) for \(type): \(error.localizedDescription)")
         }
     }
     
     func fetchImage(url: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        newsService.fetchImage(url: url) { result in
+        guard let url = URL(string: url) else {
+            return
+        }
+        newsService.request(url: url) { result in
             switch result {
-            case .success(let data):
+            case let .success((data, response)):
                 completion(.success(data))
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
@@ -77,5 +97,9 @@ final class NewsHomeViewModel {
         case .vertical:
             return getNews().count
         }
+    }
+    
+    func addObserver(_ observer: NewsObserver) {
+        self.observer = observer
     }
 }
