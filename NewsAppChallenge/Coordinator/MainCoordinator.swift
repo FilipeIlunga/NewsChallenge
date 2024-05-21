@@ -16,7 +16,8 @@ class MainCoordinator: Coordinator {
     }
 
     func start() {
-        let service = NewsService()
+        let session = URLSession(configuration: .default)
+        let service = NetworkService(session: session)
         let newsViewmodel = NewsHomeViewModel(newsService: service)
         let vc = NewsHomeViewController(viewModel: newsViewmodel)
         vc.coordinator = self

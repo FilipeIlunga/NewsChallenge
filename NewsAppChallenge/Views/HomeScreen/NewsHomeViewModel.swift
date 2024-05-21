@@ -26,10 +26,11 @@ final class NewsHomeViewModel {
     }
     
     func fetchNews(type: NewsType) async {
-        guard let page = currentPage[type] else { return }
+        guard let page = currentPage[type], let url = type.url(page: page) else { return }
         
         do {
-            let result: NewsDataResponse = try await newsService.fetchNews(type: type, page: page)
+            
+            let result: NewsDataResponse = try await newsService.request(url: url, type: NewsDataResponse.self)
             if let currentNews = news[type] {
                 news[type] = currentNews + result.articles
             } else {
