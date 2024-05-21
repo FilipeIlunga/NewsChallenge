@@ -39,7 +39,6 @@ final class NetworkServiceTest: XCTestCase {
         session.stubs(url: url, task: task, error: anyError)
         
         let exp = expectation(description: "Aguardando retorno da closure")
-        var returnedResult : NewsServiceProtocol.NetworkResult?
         
         sut.request(url: url) { result in
             switch result {
@@ -59,19 +58,16 @@ final class NetworkServiceTest: XCTestCase {
         let session = URLSessionSpy()
         let task = URLSessionDataTaskSpy()
         let sut = NetworkService(session: session)
-        let anyError = NSError(domain: "any error", code: -1)
         
         let data = Data()
         let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
         session.stubs(url: url, task: task, data: data, response: response)
         
         let exp = expectation(description: "Aguardando retorno da closure")
-        
-        var returnedResult : NewsServiceProtocol.NetworkResult?
-        
+                
         sut.request(url: url) { result in
             switch result {
-            case let .success(returnedData, returnedResponse):
+            case let .success((returnedData, returnedResponse)):
                 XCTAssertEqual(returnedData, data)
                 XCTAssertEqual(returnedResponse, response)
             default:

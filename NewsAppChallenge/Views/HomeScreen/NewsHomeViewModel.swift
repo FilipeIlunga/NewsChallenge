@@ -28,7 +28,7 @@ final class NewsHomeViewModel {
 
     init(newsService: NewsServiceProtocol) {
         self.newsService = newsService
-        NewsType.allCases.forEach { currentPage[$0] = 20 }
+        NewsType.allCases.forEach { currentPage[$0] = 100 }
     }
     
     func fetchAllNews()  {
@@ -46,7 +46,7 @@ final class NewsHomeViewModel {
         observer?.onStarNewstUpdating()
         newsService.request(url: url) { result in
             switch result {
-            case let .success((data, response)):
+            case let .success((data, _)):
                 DispatchQueue.main.async {
                     let decoder: JSONDecoder = JSONDecoder()
                     do {
@@ -77,9 +77,10 @@ final class NewsHomeViewModel {
         }
         newsService.request(url: url) { result in
             switch result {
-            case let .success((data, response)):
+            case let .success((data, _)):
                 completion(.success(data))
             case let .failure(error):
+                self.errorHandlerDelegate?.showErrorMessage(error: error)
                 completion(.failure(error))
             }
         }

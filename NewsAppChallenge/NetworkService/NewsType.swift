@@ -70,7 +70,7 @@ enum NewsType: String, CaseIterable {
         return items
     }
     
-    func url(page: Int = 20) -> URL? {
+    func url(page: Int = 100) -> URL? {
         var components = URLComponents(string: baseURL + path)
         components?.queryItems = queryItems(page: page)
         return components?.url
