@@ -8,6 +8,6 @@
 import Foundation
 
 protocol NewsServiceProtocol {
-    typealias NetworkResult = Result<(Data,HTTPURLResponse), Error>
+    typealias NetworkResult = Result<(Data,HTTPURLResponse), NewsServiceError>
     func request(url: URL, completion: @escaping (NetworkResult) -> Void)
 }

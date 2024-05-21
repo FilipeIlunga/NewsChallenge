@@ -12,9 +12,14 @@ protocol NewsObserver: AnyObject {
     func onEndNewsUpdate()
 }
 
+protocol ErrorHandlerDelegate: AnyObject {
+    func showErrorMessage(error: any Error)
+}
+
 final class NewsHomeViewModel {
     
     private(set) weak var observer: NewsObserver? = nil
+    weak var errorHandlerDelegate: ErrorHandlerDelegate?
     @Atomic private(set) var news: [NewsType: [News]] = [:]
     private var currentPage: [NewsType: Int] = [:]
     var selectedNewsType: NewsType = .apple
@@ -33,7 +38,11 @@ final class NewsHomeViewModel {
     }
     
     func fetchNews(type: NewsType)  {
-        guard let page = currentPage[type], let url = type.url(page: page) else { return }
+        guard let page = currentPage[type],  let url = type.url(page: page) else {
+            let error = NewsServiceError.badURL
+            errorHandlerDelegate?.showErrorMessage(error: error)
+            return
+        }
         observer?.onStarNewstUpdating()
         newsService.request(url: url) { result in
             switch result {
@@ -50,14 +59,13 @@ final class NewsHomeViewModel {
                         self.currentPage[type] = page + 1
                         self.observer?.newsDidUpdate()
                         self.observer?.onEndNewsUpdate()
-                    } catch let error {
-                        print("Error: \(error.localizedDescription)")
+                    } catch {
+                        self.errorHandlerDelegate?.showErrorMessage(error: error)
                         self.observer?.onEndNewsUpdate()
                     }
                 }
-                break
             case .failure(let error):
-                print("error on: \(error.localizedDescription)")
+                self.errorHandlerDelegate?.showErrorMessage(error: error)
                 self.observer?.onEndNewsUpdate()
             }
         }

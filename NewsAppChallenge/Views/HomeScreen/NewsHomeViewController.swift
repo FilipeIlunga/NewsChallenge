@@ -8,7 +8,7 @@
 import UIKit
  
 class NewsHomeViewController: UIViewController {
-    
+        
     // MARK: - Properties
     private let viewModel: NewsHomeViewModel
     private let tableView = UITableView()
@@ -31,6 +31,7 @@ class NewsHomeViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         viewModel.addObserver(self)
+        viewModel.errorHandlerDelegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -90,13 +91,17 @@ class NewsHomeViewController: UIViewController {
     }
     
     private func startActivityIndicator() {
-        activityIndicator.startAnimating()
-        tableView.isHidden = true
+        DispatchQueue.main.async {
+            self.activityIndicator.startAnimating()
+            self.tableView.isHidden = true
+        }
     }
     
     private func stopActivityIndicator() {
-        activityIndicator.stopAnimating()
-        tableView.isHidden = false
+        DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+            self.tableView.isHidden = false
+        }
     }
     
     private func loadImage(urlString: String?, into imageView: UIImageView, indexPath: IndexPath ) {
@@ -280,5 +285,16 @@ extension NewsHomeViewController: NewsObserver {
         DispatchQueue.main.async {
              self.tableView.reloadData()
          }
+    }
+}
+
+extension NewsHomeViewController: ErrorHandlerDelegate {
+    func showErrorMessage(error: Error) {
+        let errorMessage = (error as? NewsServiceError)?.localizedDescription ?? error.localizedDescription
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Error", message: errorMessage, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(alert, animated: true)
+        }
     }
 }
