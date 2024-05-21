@@ -49,7 +49,9 @@ class NewsHomeViewController: UIViewController {
     // MARK: - Setup
     private func setupView() {
         view.backgroundColor = .systemBackground
-        
+        navigationController?.navigationBar.prefersLargeTitles = true
+           navigationItem.title = "News"
+        navigationItem.largeTitleDisplayMode = .automatic
         [newsFilterCollectionView, tableView, activityIndicator].forEach {
             view.addSubview($0)
         }
